@@ -1,15 +1,16 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
-from django.conf import settings
+from apps.employees.models import Employee
 
 class Attendance(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    employee = models.ForeignKey(
+        Employee,
+        related_name='attendances',
+        on_delete=models.CASCADE
+    )
     date = models.DateField()
-    check_in = models.TimeField(null=True, blank=True)
-    check_out = models.TimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, default="Present")
+    check_in = models.TimeField()
+    check_out = models.TimeField()
+    status = models.CharField(max_length=20)
 
     class Meta:
-        unique_together = ('user', 'date')
+        unique_together = ('employee', 'date')
