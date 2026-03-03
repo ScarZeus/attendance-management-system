@@ -8,6 +8,8 @@ from .serializers import EmployeeSerializer
 class EmployeeView(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    lookup_field = "emp_id"
+    lookup_url_kwarg = "emp_id"      # Recommended    
 
     @action(detail=False, methods=['post'], url_path='create-new')
     def create_new(self, request):
@@ -28,3 +30,9 @@ class EmployeeView(viewsets.ModelViewSet):
             {"message": "Employee removed"},
             status=status.HTTP_204_NO_CONTENT
         )
+    
+    @action(detail=False, methods=["get"], url_path="all")
+    def get_all_employees(self, request):
+        employees = self.get_queryset()
+        serializer = self.get_serializer(employees, many=True)
+        return Response(serializer.data)

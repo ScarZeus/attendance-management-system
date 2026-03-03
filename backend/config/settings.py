@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',  
-    'apps.employees'
+    'apps.employees',
+    'apps.attendance'
 ]
 
 MIDDLEWARE = [
@@ -52,13 +53,11 @@ MIDDLEWARE = [
     # 'rest_framework',   
     # 'apps.users',
     
-    # 'apps.attendance',
     # 'apps.reports',
 ]
 
 ROOT_URLCONF = 'config.urls'
 
-# AUTH_USER_MODEL = 'users.User'
 
 TEMPLATES = [
     {

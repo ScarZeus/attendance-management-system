@@ -1,0 +1,171 @@
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
+from datetime import datetime, timedelta
+from .models import Attendance
+from .serializers import AttendanceSerializer
+from apps.employees.models import Employee
+
+
+class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
+
+    serializer_class = AttendanceSerializer
+
+    def get_employee(self):
+        return get_object_or_404(
+            Employee,
+            emp_id=self.kwargs.get("employee_emp_id")
+        )
+
+    def get_queryset(self):
+        return Attendance.objects.filter(
+            employee_id=self.kwargs.get("employee_pk")
+        ).order_by("-date")
+
+    def create(self, request, *args, **kwargs):
+        return Response(
+            {"error": "Use the mark-today endpoint."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    def update(self, request, *args, **kwargs):
+        return Response(
+            {"error": "Attendance cannot be modified once marked."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(
+            {"error": "Attendance records cannot be deleted."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="mark-today",
+        url_name="mark-today"
+    )
+    def mark_today(self, request, employee_emp_id=None):
+
+        employee = self.get_employee()
+        today = timezone.now().date()
+
+        if Attendance.objects.filter(employee=employee, date=today).exists():
+            return Response(
+                {"error": "Attendance already marked for today."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save(
+            employee=employee,
+            date=today
+        )
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="leave/apply",
+        url_name="apply-leave"
+    )
+    def apply_leave(self, request, employee_pk=None):
+
+        employee = self.get_employee()
+
+        from_date = request.data.get("from_date")
+        to_date = request.data.get("to_date")
+        reason = request.data.get("reason")
+
+        if not all([from_date, to_date, reason]):
+            return Response(
+                {"error": "from_date, to_date and reason are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            from_date = datetime.fromisoformat(from_date).date()
+            to_date = datetime.fromisoformat(to_date).date()
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if from_date < timezone.now().date():
+            return Response(
+                {"error": "Cannot apply leave for past dates."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if from_date > to_date:
+            return Response(
+                {"error": "from_date cannot be after to_date."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        created_records = []
+        current = from_date
+
+        while current <= to_date:
+            obj, created = Attendance.objects.get_or_create(
+                employee=employee,
+                date=current,
+                defaults={
+                    "status": "LEAVE",
+                    "reason": reason
+                }
+            )
+
+            if created:
+                created_records.append(obj)
+
+            current += timedelta(days=1)
+
+        return Response(
+            AttendanceSerializer(created_records, many=True).data,
+            status=status.HTTP_201_CREATED
+        )
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="report/monthly",
+        url_name="monthly-report"
+    )
+    def monthly_report(self, request, employee_pk=None):
+
+        month = request.query_params.get("month")
+        year = request.query_params.get("year")
+
+        if not month or not year:
+            return Response(
+                {"error": "month and year query params required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            month = int(month)
+            year = int(year)
+        except ValueError:
+            return Response(
+                {"error": "month and year must be integers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        records = Attendance.objects.filter(
+            employee_id=employee_pk,
+            date__year=year,
+            date__month=month
+        ).order_by("-date")
+
+        return Response(
+            AttendanceSerializer(records, many=True).data,
+            status=status.HTTP_200_OK
+        )
