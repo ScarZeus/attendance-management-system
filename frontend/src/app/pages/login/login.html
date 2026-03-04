@@ -1,1 +1,76 @@
-<p>login works!</p>
+<div class="auth-container">
+  <div class="card-wrapper" [class.flipped]="isFlipped">
+
+    <div class="auth-card">
+
+      <!-- FRONT SIDE (LOGIN) -->
+      <div class="card-face card-front">
+        <h2>Login</h2>
+
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+          <input type="text"
+                 name="emp_id"
+                 placeholder="Employee ID"
+                 [(ngModel)]="loginData.emp_id"
+                 required />
+
+          <input type="email"
+                 name="email"
+                 placeholder="Email"
+                 [(ngModel)]="loginData.email"
+                 required />
+
+          <button type="submit" [disabled]="!loginForm.valid">
+            Login
+          </button>
+        </form>
+
+        <p class="switch-text">
+          Don’t have an account?
+          <span (click)="toggleCard()">Register</span>
+        </p>
+      </div>
+
+      <!-- BACK SIDE (REGISTER) -->
+      <div class="card-face card-back">
+        <h2>Register</h2>
+
+        <form (ngSubmit)="register()" #registerForm="ngForm">
+          <input type="text"
+                 name="emp_id"
+                 placeholder="Employee ID"
+                 [(ngModel)]="registerData.emp_id"
+                 required />
+
+          <input type="text"
+                 name="name"
+                 placeholder="Full Name"
+                 [(ngModel)]="registerData.name"
+                 required />
+
+          <input type="email"
+                 name="email"
+                 placeholder="Email"
+                 [(ngModel)]="registerData.email"
+                 required />
+
+          <input type="text"
+                 name="department"
+                 placeholder="Department"
+                 [(ngModel)]="registerData.department"
+                 required />
+
+          <button type="submit" [disabled]="!registerForm.valid">
+            Register
+          </button>
+        </form>
+
+        <p class="switch-text">
+          Already have an account?
+          <span (click)="toggleCard()">Login</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
