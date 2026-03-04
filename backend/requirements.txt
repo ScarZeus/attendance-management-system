@@ -1,0 +1,5 @@
+djangorestframework
+django
+markdown
+django-filter
+drf-nested-routers

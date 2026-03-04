@@ -21,6 +21,22 @@ class EmployeeView(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    @action(detail=False, methods=['post'], url_path='login')
+    def login(self, request):
+        emp_id = request.data.get("emp_id")
+        email = request.data.get("email")
+
+        try:
+            employee = Employee.objects.get(emp_id=emp_id, email=email)
+            serializer = self.get_serializer(employee)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Employee.DoesNotExist:
+            return Response(
+                {"error": "Invalid credentials"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
     @action(detail=True, methods=['delete'], url_path='remove')
     def remove_employee(self, request, pk=None):
         employee = self.get_object()

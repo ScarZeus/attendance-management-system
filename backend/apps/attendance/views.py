@@ -18,7 +18,7 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             Employee,
             emp_id=self.kwargs.get("employee_emp_id")
         )
-
+    
     def get_queryset(self):
         return Attendance.objects.filter(
             employee_id=self.kwargs.get("employee_pk")
@@ -134,12 +134,14 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
         )
 
     @action(
-        detail=False,
-        methods=["get"],
-        url_path="report/monthly",
-        url_name="monthly-report"
-    )
-    def monthly_report(self, request, employee_pk=None):
+    detail=False,
+    methods=["get"],
+    url_path="report/monthly",
+    url_name="monthly-report"
+)
+    def monthly_report(self, request, employee_emp_id=None):
+
+        employee = self.get_employee()
 
         month = request.query_params.get("month")
         year = request.query_params.get("year")
@@ -160,7 +162,7 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             )
 
         records = Attendance.objects.filter(
-            employee_id=employee_pk,
+            employee=employee,
             date__year=year,
             date__month=month
         ).order_by("-date")
