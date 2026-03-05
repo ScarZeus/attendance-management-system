@@ -3,3 +3,4 @@ django
 markdown
 django-filter
 drf-nested-routers
+django-cors-headers

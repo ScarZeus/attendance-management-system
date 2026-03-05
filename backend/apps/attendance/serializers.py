@@ -4,4 +4,9 @@ from .models import Attendance
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        fields = '__all__'
+        fields = [
+            "status",
+            "check_in",
+            "check_out",
+            "reason"
+        ]

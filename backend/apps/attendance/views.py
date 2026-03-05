@@ -54,6 +54,7 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
         today = timezone.now().date()
 
         if Attendance.objects.filter(employee=employee, date=today).exists():
+            print("This Date")
             return Response(
                 {"error": "Attendance already marked for today."},
                 status=status.HTTP_400_BAD_REQUEST

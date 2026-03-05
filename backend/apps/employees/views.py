@@ -9,10 +9,13 @@ class EmployeeView(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     lookup_field = "emp_id"
-    lookup_url_kwarg = "emp_id"      # Recommended    
+    lookup_url_kwarg = "emp_id"        
 
     @action(detail=False, methods=['post'], url_path='create-new')
     def create_new(self, request):
+        print("REQUEST RECEIVED")
+        print(request.data)
+
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
@@ -20,7 +23,7 @@ class EmployeeView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     @action(detail=False, methods=['post'], url_path='login')
     def login(self, request):
         emp_id = request.data.get("emp_id")
@@ -28,6 +31,7 @@ class EmployeeView(viewsets.ModelViewSet):
 
         try:
             employee = Employee.objects.get(emp_id=emp_id, email=email)
+            print(employee)
             serializer = self.get_serializer(employee)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
