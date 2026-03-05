@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
-import { email } from '@angular/forms/signals';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule,FormsModule],
+  imports: [FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -41,6 +39,7 @@ export class Login {
       .subscribe({
         next: (res: any) => {
           this.auth.saveUser(res);
+          console.log("Moving to Navigation");
           this.router.navigate(['/dashboard']);
         },
         error: () => alert("Invalid credentials")

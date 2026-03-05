@@ -3,26 +3,33 @@
 
     <div class="auth-card">
 
-      <!-- FRONT SIDE (LOGIN) -->
       <div class="card-face card-front">
         <h2>Login</h2>
 
         <form (ngSubmit)="login()" #loginForm="ngForm">
-          <input type="text"
-                 name="emp_id"
-                 placeholder="Employee ID"
-                 [(ngModel)]="loginData.emp_id"
-                 required />
 
-          <input type="email"
-                 name="email"
-                 placeholder="Email"
-                 [(ngModel)]="loginData.email"
-                 required />
+          <div class="form-group">
+            <input type="text"
+                  name="emp_id"
+                  [(ngModel)]="loginData.emp_id"
+                  required
+                  placeholder=" " />
+            <label>Employee ID</label>
+          </div>
+
+          <div class="form-group">
+            <input type="email"
+                  name="email"
+                  [(ngModel)]="loginData.email"
+                  required
+                  placeholder=" " />
+            <label>Email</label>
+          </div>
 
           <button type="submit" [disabled]="!loginForm.valid">
             Login
           </button>
+
         </form>
 
         <p class="switch-text">
@@ -31,38 +38,51 @@
         </p>
       </div>
 
-      <!-- BACK SIDE (REGISTER) -->
       <div class="card-face card-back">
         <h2>Register</h2>
 
         <form (ngSubmit)="register()" #registerForm="ngForm">
-          <input type="text"
-                 name="emp_id"
-                 placeholder="Employee ID"
-                 [(ngModel)]="registerData.emp_id"
-                 required />
 
-          <input type="text"
-                 name="name"
-                 placeholder="Full Name"
-                 [(ngModel)]="registerData.name"
-                 required />
+          <div class="form-group">
+            <input type="text"
+                  name="emp_id"
+                  [(ngModel)]="registerData.emp_id"
+                  required
+                  placeholder=" " />
+            <label>Employee ID</label>
+          </div>
 
-          <input type="email"
-                 name="email"
-                 placeholder="Email"
-                 [(ngModel)]="registerData.email"
-                 required />
+          <div class="form-group">
+            <input type="text"
+                  name="name"
+                  [(ngModel)]="registerData.name"
+                  required
+                  placeholder=" " />
+            <label>Full Name</label>
+          </div>
 
-          <input type="text"
-                 name="department"
-                 placeholder="Department"
-                 [(ngModel)]="registerData.department"
-                 required />
+          <div class="form-group">
+            <input type="email"
+                  name="email"
+                  [(ngModel)]="registerData.email"
+                  required
+                  placeholder=" " />
+            <label>Email</label>
+          </div>
+
+          <div class="form-group">
+            <input type="text"
+                  name="department"
+                  [(ngModel)]="registerData.department"
+                  required
+                  placeholder=" " />
+            <label>Department</label>
+          </div>
 
           <button type="submit" [disabled]="!registerForm.valid">
             Register
           </button>
+
         </form>
 
         <p class="switch-text">
