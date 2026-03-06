@@ -6,7 +6,6 @@
         src="user.png"
         alt="user-icon"
         id="user-img"
-        (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + credentials.name + '&background=4f46e5&color=fff'"
       />
       <h2>{{ credentials.name || 'N/A' }}</h2>
       <p class="department">{{ credentials.department || 'N/A' }}</p>
@@ -23,7 +22,7 @@
         </div>
       </div>
 
-      <button class="view-btn">View This Month Attendance</button>
+      <button class="view-btn" (click) = "view_attendance()">View This Month Attendance</button>
     </div>
 
     <div class="details">
