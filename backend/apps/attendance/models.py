@@ -19,6 +19,10 @@ class Attendance(models.Model):
 
     date = models.DateField()
 
+    from_date = models.DateField(null=True,blank=True)
+    to_date = models.DateField(null=True,blank=True)
+    
+
     check_in = models.TimeField(null=True, blank=True)
     check_out = models.TimeField(null=True, blank=True)
 

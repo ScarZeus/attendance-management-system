@@ -71,22 +71,21 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
-        detail=False,
-        methods=["post"],
-        url_path="leave/apply",
-        url_name="apply-leave"
+    detail=False,
+    methods=["post"],
+    url_path="mark-absent",
+    url_name="mark-absent"
     )
-    def apply_leave(self, request, employee_pk=None):
+    def mark_absent(self, request, employee_emp_id=None):
 
         employee = self.get_employee()
 
-        from_date = request.data.get("from_date")
-        to_date = request.data.get("to_date")
-        reason = request.data.get("reason")
+        from_date = request.query_params.get("from")
+        to_date = request.query_params.get("to")
 
-        if not all([from_date, to_date, reason]):
+        if not all([from_date, to_date]):
             return Response(
-                {"error": "from_date, to_date and reason are required."},
+                {"error": "Query parameters 'from' and 'to' are required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -99,15 +98,9 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if from_date < timezone.now().date():
-            return Response(
-                {"error": "Cannot apply leave for past dates."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         if from_date > to_date:
             return Response(
-                {"error": "from_date cannot be after to_date."},
+                {"error": "'from' date cannot be after 'to' date."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -119,8 +112,7 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
                 employee=employee,
                 date=current,
                 defaults={
-                    "status": "LEAVE",
-                    "reason": reason
+                    "status": "ABSENT"
                 }
             )
 

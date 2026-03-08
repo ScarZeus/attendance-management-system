@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class Auth {
   saveAttendace(payload: { emp_id: string; date: string; status: string; check_in: string | null; check_out: string | null; reason: string; }) {
     console.log("Sending to Server")
-    const res =  this.http.post(`${this.baseUrl}/${payload.emp_id}/attendance/mark-today/`,payload);
+    const res =  this.http.post(`${this.baseUrl}/${payload.emp_id }/attendance/mark-today/`,payload);
     console.log(res);
     return res;
   }
