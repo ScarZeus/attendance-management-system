@@ -5,6 +5,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = [
+            "date",
             "status",
             "check_in",
             "check_out",

@@ -1,0 +1,27 @@
+<h2>Attendance Report</h2>
+<h3 *ngIf="employee">{{ employee.name }} ({{ employee.emp_id }})</h3>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Check In</th>
+      <th>Check Out</th>
+      <th>Status</th>
+      <th>Reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let att of attendanceList">
+      <td>{{ att.date }}</td>
+      <td>{{ att.check_in }}</td>
+      <td>{{ att.check_out }}</td>
+      <td>{{ att.status }}</td>
+      <td>{{ att.reason }}</td>
+    </tr>
+
+    <tr *ngIf="attendanceList.length === 0">
+      <td colspan="5">No attendance records found</td>
+    </tr>
+  </tbody>
+</table>

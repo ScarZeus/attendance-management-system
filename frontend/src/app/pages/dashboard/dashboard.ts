@@ -86,6 +86,10 @@ export class Dashboard implements OnInit {
     }
   }
 
+  view_attendance() {
+  this.router.navigate(['/attendance']);
+}
+
   submitAttendance() {
     if (this.showCheckin && (!this.attendance.check_in || !this.attendance.check_out)) {
       alert('Please enter both Check In and Check Out times.');
