@@ -119,7 +119,7 @@ export class Dashboard implements OnInit {
       check_out: this.attendance.check_out || null,
       reason: this.attendance.reason || 'N/A'
     };
-    this.auth.saveAttendace(payload).subscribe({
+    this.auth.saveAttendace(payload,this.from_date,this.to_date).subscribe({
   next: (res) => {
     console.log("Attendance saved", res);
   },

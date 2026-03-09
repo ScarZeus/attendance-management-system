@@ -6,8 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class Auth {
-  saveAttendace(payload: { emp_id: string; date: string; status: string; check_in: string | null; check_out: string | null; reason: string; }) {
+  saveAttendace(payload: { emp_id: string; date: string; status: string; check_in: string | null; check_out: string | null; reason: string; },from_date : string, to_date:string) {
     console.log("Sending to Server")
+    if(payload.status === "WFH"){
+      const res = this.http.post(`${this.baseUrl}/${payload.emp_id}/attendance/mark-absent?from=${from_date}&to=${to_date}`,payload)
+    }
     const res =  this.http.post(`${this.baseUrl}/${payload.emp_id }/attendance/mark-today/`,payload);
     console.log(res);
     return res;
