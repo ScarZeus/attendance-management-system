@@ -21,12 +21,15 @@ export class Dashboard implements OnInit {
     email: '',
     department: ''
   };
-
+  showFromDate = false;
+  showToDate = false;
   showModal = false;
   showReason = false;
   showCheckin = true;
   dropdownOpen = false;
   todayDate = '';
+  from_date = '';
+  to_date = '';
 
   attendance = {
     status: 'PRESENT',
@@ -74,13 +77,21 @@ export class Dashboard implements OnInit {
     if (status === 'ABSENT') {
       this.showReason = true;
       this.showCheckin = false;
+      this.showFromDate = true;
+      this.showToDate = true;
     } else if (status === 'HALF_DAY') {
       this.showReason = true;
       this.showCheckin = true;
+      this.showFromDate = false;
+      this.showToDate = false;
     } else if (status === 'WFH') {
       this.showReason = false;
       this.showCheckin = true;
+      this.showFromDate = true;
+      this.showToDate = true;
     } else {
+      this.showFromDate = false;
+      this.showToDate = false;
       this.showReason = false;
       this.showCheckin = true;
     }

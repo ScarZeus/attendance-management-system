@@ -78,6 +78,14 @@
         <label>Check Out</label>
         <input type="time" [(ngModel)]="attendance.check_out" name="check_out" />
       </div>
+      <div class="form-feild" *ngIf="showFromDate">
+        <label>From</label>
+        <input type="date" name="from_date" [(ngModel)]="from_date">
+      </div>
+      <div class="form-feild" *ngIf="showToDate">
+        <label>To</label>
+        <input type="date" name="from_date" [(ngModel)]="to_date">
+      </div>
 
       <div class="form-field" *ngIf="showReason">
         <label>Reason</label>
