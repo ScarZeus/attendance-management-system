@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from .models import Attendance
 from .serializers import AttendanceSerializer
 from apps.employees.models import Employee
-
+from datetime import date
 
 class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
 
@@ -73,19 +73,28 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
     @action(
     detail=False,
     methods=["post"],
-    url_path="mark-absent",
-    url_name="mark-absent"
+    url_path="mark-attendance",
+    url_name="mark-attendance"
     )
-    def mark_absent(self, request, employee_emp_id=None):
+    def mark_attendance(self, request, employee_emp_id=None):
 
         employee = self.get_employee()
 
         from_date = request.query_params.get("from")
         to_date = request.query_params.get("to")
+        status_value = request.data.get("status")   # ABSENT / WFH
 
-        if not all([from_date, to_date]):
+        if not all([from_date, to_date, status_value]):
             return Response(
-                {"error": "Query parameters 'from' and 'to' are required."},
+                {"error": "Query params 'from', 'to' and body field 'status' are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        allowed_status = ["ABSENT", "WFH"]
+
+        if status_value not in allowed_status:
+            return Response(
+                {"error": f"Status must be one of {allowed_status}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -111,9 +120,7 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             obj, created = Attendance.objects.get_or_create(
                 employee=employee,
                 date=current,
-                defaults={
-                    "status": "ABSENT"
-                }
+                defaults={"status": status_value}
             )
 
             if created:
@@ -125,7 +132,6 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             AttendanceSerializer(created_records, many=True).data,
             status=status.HTTP_201_CREATED
         )
-
     @action(
     detail=False,
     methods=["get"],
@@ -163,4 +169,4 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
         return Response(
             AttendanceSerializer(records, many=True).data,
             status=status.HTTP_200_OK
-        )
+        ) 
