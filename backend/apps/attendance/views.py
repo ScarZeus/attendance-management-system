@@ -82,8 +82,17 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
 
         from_date = request.query_params.get("from")
         to_date = request.query_params.get("to")
-        status_value = request.data.get("status")   # ABSENT / WFH
+        status_value = request.data.get("status")
+        check_in = request.data.get("check_in")
+        check_out = request.data.get("check_out")
+        print("Check in : ",check_in)
+        print("check out :", check_out)
+        if check_in:
+            check_in = datetime.strptime(check_in, "%H:%M").time()
 
+        if check_out:
+            check_out = datetime.strptime(check_out, "%H:%M").time()
+           
         if not all([from_date, to_date, status_value]):
             return Response(
                 {"error": "Query params 'from', 'to' and body field 'status' are required."},
@@ -91,7 +100,6 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             )
 
         allowed_status = ["ABSENT", "WFH"]
-
         if status_value not in allowed_status:
             return Response(
                 {"error": f"Status must be one of {allowed_status}"},
@@ -106,11 +114,31 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
                 {"error": "Invalid date format. Use YYYY-MM-DD."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        existing_attendance = Attendance.objects.filter(
+    employee=employee,
+    date__range=(from_date, to_date)
+    )
+
+        if existing_attendance.exists():
+            return Response(
+                {
+                    "error": "Attendance already exists for some dates in the given range.",
+                    "dates": list(existing_attendance.values_list("date", flat=True))
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if from_date > to_date:
             return Response(
                 {"error": "'from' date cannot be after 'to' date."},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+        if from_date < date.today():
+            return Response(
+                {"error" : "Invalid from date"},
+                status=status.HTTP_400_BAD_REQUEST
+
             )
 
         created_records = []
@@ -120,7 +148,9 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             obj, created = Attendance.objects.get_or_create(
                 employee=employee,
                 date=current,
-                defaults={"status": status_value}
+                defaults={"status": status_value},
+                check_in=check_in,
+                check_out=check_out
             )
 
             if created:

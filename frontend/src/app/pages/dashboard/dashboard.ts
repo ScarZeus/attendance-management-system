@@ -110,7 +110,6 @@ export class Dashboard implements OnInit {
       alert('Please provide a reason.');
       return;
     }
-
     const payload = {
       emp_id: this.credentials.emp_id,
       date: this.todayDate,
@@ -119,6 +118,8 @@ export class Dashboard implements OnInit {
       check_out: this.attendance.check_out || null,
       reason: this.attendance.reason || 'N/A'
     };
+    console.log("Payload :"+ payload);
+
     this.auth.saveAttendace(payload,this.from_date,this.to_date).subscribe({
   next: (res) => {
     console.log("Attendance saved", res);
