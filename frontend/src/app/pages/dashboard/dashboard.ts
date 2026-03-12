@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { submit } from '@angular/forms/signals';
+import { Attendance } from '../../services/attendance';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,7 @@ import { submit } from '@angular/forms/signals';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  constructor(private auth: Auth, private router: Router) {}
+  constructor(private auth: Auth, private router: Router,private attendanceEmp: Attendance) {}
 
   credentials = {
     emp_id: '',
@@ -120,7 +121,7 @@ export class Dashboard implements OnInit {
     };
     console.log("Payload :"+ payload);
 
-    this.auth.saveAttendace(payload,this.from_date,this.to_date).subscribe({
+    this.attendanceEmp.saveAttendace(payload,this.from_date,this.to_date).subscribe({
   next: (res) => {
     console.log("Attendance saved", res);
   },
