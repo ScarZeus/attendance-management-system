@@ -20,6 +20,7 @@ export class Login {
   registerData = {
     emp_id: '',
     name: '',
+    role: '',
     email: '',
     department: ''
   };
@@ -32,28 +33,26 @@ export class Login {
 
   login() {
     const data = {
-      emp_id : this.loginData.emp_id,
-      email : this.loginData.email
-    }
-    this.auth.login(data)
-      .subscribe({
-        next: (res: any) => {
-          this.auth.saveUser(res);
-          console.log("Moving to Navigation");
-          this.router.navigate(['/dashboard']);
-        },
-        error: () => alert("Invalid credentials")
-      });
+      emp_id: this.loginData.emp_id,
+      email: this.loginData.email
+    };
+    this.auth.login(data).subscribe({
+      next: (res: any) => {
+        this.auth.saveUser(res);
+        console.log("Moving to Navigation");
+        this.router.navigate(['/dashboard']);
+      },
+      error: () => alert("Invalid credentials")
+    });
   }
 
   register() {
-    this.auth.signup(this.registerData)
-      .subscribe({
-        next: () => {
-          alert("Registration successful");
-          this.toggleCard();
-        },
-        error: () => alert("Registration failed")
-      });
+    this.auth.signup(this.registerData).subscribe({
+      next: () => {
+        alert("Registration successful");
+        this.toggleCard();
+      },
+      error: () => alert("Registration failed")
+    });
   }
 }

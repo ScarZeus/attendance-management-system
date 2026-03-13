@@ -16,7 +16,7 @@ class Attendance(models.Model):
         related_name="attendances",
         on_delete=models.CASCADE
     )
-
+    
     date = models.DateField(db_index=True)
 
     check_in = models.TimeField(null=True, blank=True)

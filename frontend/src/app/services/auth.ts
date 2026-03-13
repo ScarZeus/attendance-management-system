@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment.development';
 export class Auth {
   
   
-  private baseUrl = fetch(environment.apiUrl);
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

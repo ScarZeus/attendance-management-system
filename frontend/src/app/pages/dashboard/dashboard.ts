@@ -3,7 +3,6 @@ import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { submit } from '@angular/forms/signals';
 import { Attendance } from '../../services/attendance';
 
 @Component({
@@ -14,7 +13,12 @@ import { Attendance } from '../../services/attendance';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  constructor(private auth: Auth, private router: Router,private attendanceEmp: Attendance) {}
+
+  constructor(
+    private auth: Auth,
+    private router: Router,
+    private attendanceEmp: Attendance
+  ) {}
 
   credentials = {
     emp_id: '',
@@ -22,20 +26,22 @@ export class Dashboard implements OnInit {
     email: '',
     department: ''
   };
-  showFromDate = false;
-  showToDate = false;
-  showModal = false;
-  showReason = false;
-  showCheckin = true;
-  dropdownOpen = false;
-  todayDate = '';
-  from_date = '';
-  to_date = '';
 
-  attendance = {
-    status: 'PRESENT',
+  modalTitle    = '';
+  showModal     = false;
+  showCheckin   = false;
+  showCheckout  = false;
+  showDateRange = false;
+  showReason    = false;
+
+  todayDate = '';
+
+  attendance: any = {
+    status: '',
     check_in: '',
     check_out: '',
+    from_date: '',
+    to_date: '',
     reason: ''
   };
 
@@ -48,88 +54,104 @@ export class Dashboard implements OnInit {
         console.error('Failed to parse credentials', e);
       }
     }
+    this.todayDate = new Date().toISOString().split('T')[0];
   }
 
-  @HostListener('document:click', ['$event'])
-  onOutsideClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.attendance-dropdown')) {
-      this.dropdownOpen = false;
+  openForm(event: Event, type: string) {
+    event.stopPropagation();
+
+    // Reset
+    this.attendance = {
+      status: type,
+      check_in: '',
+      check_out: '',
+      from_date: '',
+      to_date: '',
+      reason: ''
+    };
+
+    this.showCheckin   = false;
+    this.showCheckout  = false;
+    this.showDateRange = false;
+    this.showReason    = false;
+
+    switch (type) {
+      case 'CHECKIN':
+        this.modalTitle  = 'Check In';
+        this.showCheckin = true;
+        break;
+
+      case 'CHECKOUT':
+        this.modalTitle   = 'Check Out';
+        this.showCheckout = true;
+        break;
+
+      case 'HALF_DAY':
+        this.modalTitle   = 'Half Day';
+        this.showCheckin  = true;
+        this.showCheckout = true;
+        this.showReason   = true;
+        break;
+
+      case 'LEAVE':
+        this.modalTitle    = 'Apply Leave';
+        this.showDateRange = true;
+        this.showReason    = true;
+        break;
+
+      case 'WFH':
+        this.modalTitle    = 'Work From Home';
+        this.showDateRange = true;
+        this.showReason    = true;
+        break;
     }
-  }
 
-  toggleDropdown(event: Event) {
-    event.stopPropagation(); 
-    this.dropdownOpen = !this.dropdownOpen;
-  }
-
-  openForm(event: Event, status: string) {
-    event.stopPropagation(); 
-    this.dropdownOpen = false;
-    this.attendance.status = status;
-    this.onStatusChange();
     this.showModal = true;
-    const now = new Date();
-    this.todayDate = now.toISOString().split('T')[0];
   }
-
-  onStatusChange() {
-    const status = this.attendance.status;
-    if (status === 'ABSENT') {
-      this.showReason = true;
-      this.showCheckin = false;
-      this.showFromDate = true;
-      this.showToDate = true;
-    } else if (status === 'HALF_DAY') {
-      this.showReason = true;
-      this.showCheckin = true;
-      this.showFromDate = false;
-      this.showToDate = false;
-    } else if (status === 'WFH') {
-      this.showReason = false;
-      this.showCheckin = true;
-      this.showFromDate = true;
-      this.showToDate = true;
-    } else {
-      this.showFromDate = false;
-      this.showToDate = false;
-      this.showReason = false;
-      this.showCheckin = true;
-    }
-  }
-
-  view_attendance() {
-  this.router.navigate(['/attendance']);
-}
 
   submitAttendance() {
-    if (this.showCheckin && (!this.attendance.check_in || !this.attendance.check_out)) {
-      alert('Please enter both Check In and Check Out times.');
+    // Validation
+    if (this.showCheckin && !this.attendance.check_in) {
+      alert('Please enter Check In time.');
+      return;
+    }
+    if (this.showCheckout && !this.attendance.check_out) {
+      alert('Please enter Check Out time.');
+      return;
+    }
+    if (this.showDateRange && (!this.attendance.from_date || !this.attendance.to_date)) {
+      alert('Please select From and To dates.');
       return;
     }
     if (this.showReason && !this.attendance.reason.trim()) {
       alert('Please provide a reason.');
       return;
     }
-    const payload = {
-      emp_id: this.credentials.emp_id,
-      date: this.todayDate,
-      status: this.attendance.status,
-      check_in: this.attendance.check_in || null,
-      check_out: this.attendance.check_out || null,
-      reason: this.attendance.reason || 'N/A'
-    };
-    console.log("Payload :"+ payload);
 
-    this.attendanceEmp.saveAttendace(payload,this.from_date,this.to_date).subscribe({
-  next: (res) => {
-    console.log("Attendance saved", res);
-  },
-  error: (err) => {
-    console.error("Error saving attendance", err);
-  }
-});
-    console.log('Submitting:', payload);
+    const payload = {
+      emp_id:    this.credentials.emp_id,
+      date:      this.todayDate,
+      status:    this.attendance.status,
+      check_in:  this.attendance.check_in  || null,
+      check_out: this.attendance.check_out || null,
+      from_date: this.attendance.from_date || null,
+      to_date:   this.attendance.to_date   || null,
+      reason:    this.attendance.reason    || null
+    };
+
+    console.log('Payload:', payload);
+
+    this.attendanceEmp.saveAttendace(payload, this.attendance.from_date, this.attendance.to_date)
+      .subscribe({
+        next: (res) => {
+          console.log('Attendance saved', res);
+          alert('Attendance submitted successfully!');
+        },
+        error: (err) => {
+          console.error('Error saving attendance', err);
+          alert('Failed to submit attendance.');
+        }
+      });
 
     this.resetAndClose();
   }
@@ -138,14 +160,23 @@ export class Dashboard implements OnInit {
     this.resetAndClose();
   }
 
+  view_attendance() {
+    this.router.navigate(['/attendance']);
+  }
+
   private resetAndClose() {
-    this.showModal = false;
-    this.showReason = false;
-    this.showCheckin = true;
+    this.showModal     = false;
+    this.showCheckin   = false;
+    this.showCheckout  = false;
+    this.showDateRange = false;
+    this.showReason    = false;
+    this.modalTitle    = '';
     this.attendance = {
-      status: 'PRESENT',
+      status: '',
       check_in: '',
       check_out: '',
+      from_date: '',
+      to_date: '',
       reason: ''
     };
   }

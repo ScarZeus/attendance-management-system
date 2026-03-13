@@ -51,7 +51,6 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # check approved leave
         leave = LeaveRequest.objects.filter(
             employee=employee,
             status="APPROVED",
@@ -65,7 +64,6 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # check approved WFH
         wfh = WorkFromHomeRequest.objects.filter(
             employee=employee,
             status="APPROVED",

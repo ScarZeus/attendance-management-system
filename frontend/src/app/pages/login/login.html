@@ -1,96 +1,89 @@
 <div class="auth-container">
   <div class="card-wrapper" [class.flipped]="isFlipped">
-
     <div class="auth-card">
-
       <div class="card-face card-front">
         <h2>Login</h2>
-
         <form (ngSubmit)="login()" #loginForm="ngForm">
-
           <div class="form-group">
             <input type="text"
-                  name="emp_id"
-                  [(ngModel)]="loginData.emp_id"
-                  required
-                  placeholder=" " />
+                   name="emp_id"
+                   [(ngModel)]="loginData.emp_id"
+                   required
+                   placeholder=" " />
             <label>Employee ID</label>
           </div>
-
           <div class="form-group">
             <input type="email"
-                  name="email"
-                  [(ngModel)]="loginData.email"
-                  required
-                  placeholder=" " />
+                   name="email"
+                   [(ngModel)]="loginData.email"
+                   required
+                   placeholder=" " />
             <label>Email</label>
           </div>
-
           <button type="submit" [disabled]="!loginForm.valid">
             Login
           </button>
-
         </form>
-
         <p class="switch-text">
-          Don’t have an account?
+          Don't have an account?
           <span (click)="toggleCard()">Register</span>
         </p>
       </div>
 
       <div class="card-face card-back">
         <h2>Register</h2>
-
         <form (ngSubmit)="register()" #registerForm="ngForm">
-
           <div class="form-group">
             <input type="text"
-                  name="emp_id"
-                  [(ngModel)]="registerData.emp_id"
-                  required
-                  placeholder=" " />
+                   name="emp_id"
+                   [(ngModel)]="registerData.emp_id"
+                   required
+                   placeholder=" " />
             <label>Employee ID</label>
           </div>
-
           <div class="form-group">
             <input type="text"
-                  name="name"
-                  [(ngModel)]="registerData.name"
-                  required
-                  placeholder=" " />
+                   name="name"
+                   [(ngModel)]="registerData.name"
+                   required
+                   placeholder=" " />
             <label>Full Name</label>
           </div>
-
+          <div class="form-group select-group">
+            <select name="role"
+                    [(ngModel)]="registerData.role"
+                    required>
+              <option value="" disabled selected>Select Role</option>
+              <option value="HR">HR</option>
+              <option value="EMPLOYEE">Employee</option>
+            </select>
+            <label>Role</label>
+          </div>
           <div class="form-group">
             <input type="email"
-                  name="email"
-                  [(ngModel)]="registerData.email"
-                  required
-                  placeholder=" " />
+                   name="email"
+                   [(ngModel)]="registerData.email"
+                   required
+                   placeholder=" " />
             <label>Email</label>
           </div>
-
           <div class="form-group">
             <input type="text"
-                  name="department"
-                  [(ngModel)]="registerData.department"
-                  required
-                  placeholder=" " />
+                   name="department"
+                   [(ngModel)]="registerData.department"
+                   required
+                   placeholder=" " />
             <label>Department</label>
           </div>
-
           <button type="submit" [disabled]="!registerForm.valid">
             Register
           </button>
-
         </form>
-
         <p class="switch-text">
           Already have an account?
           <span (click)="toggleCard()">Login</span>
         </p>
       </div>
-
     </div>
   </div>
 </div>
