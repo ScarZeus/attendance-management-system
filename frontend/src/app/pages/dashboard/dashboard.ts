@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,8 +14,6 @@ import { Attendance } from '../../services/attendance';
 })
 export class Dashboard implements OnInit {
 
-  now = new Date();
-
   constructor(
     private auth: Auth,
     private router: Router,
@@ -30,14 +28,20 @@ export class Dashboard implements OnInit {
     department: ''
   };
 
-  modalTitle    = '';
-  showModal     = false;
-  showCheckin   = false;
-  showCheckout  = false;
+  modalTitle = '';
+  showModal = false;
+  showCheckin = false;
+  showCheckout = false;
   showDateRange = false;
-  showReason    = false;
+  showReason = false;
+  showLeaveType = false;
 
   todayDate = '';
+
+  leaveTypes = [
+    { value: 'SICK', label: 'Sick Leave' },
+    { value: 'CASUAL', label: 'Casual Leave' }
+  ];
 
   attendance: any = {
     status: '',
@@ -45,7 +49,8 @@ export class Dashboard implements OnInit {
     check_out: '',
     from_date: '',
     to_date: '',
-    reason: ''
+    reason: '',
+    leave_type: ''
   };
 
   ngOnInit() {
@@ -57,7 +62,15 @@ export class Dashboard implements OnInit {
         console.error('Failed to parse credentials', e);
       }
     }
+
     this.todayDate = new Date().toISOString().split('T')[0];
+  }
+
+  getCurrentTime(): string {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 
   openForm(event: Event, type: string) {
@@ -69,49 +82,41 @@ export class Dashboard implements OnInit {
       check_out: '',
       from_date: '',
       to_date: '',
-      reason: ''
+      reason: '',
+      leave_type: ''
     };
 
-    this.showCheckin   = false;
-    this.showCheckout  = false;
+    this.showCheckin = false;
+    this.showCheckout = false;
     this.showDateRange = false;
-    this.showReason    = false;
+    this.showReason = false;
+    this.showLeaveType = false;
 
     switch (type) {
+
       case 'CHECKIN':
         this.modalTitle = 'Check In';
-
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-
-        this.attendance.check_in = `${hours}:${minutes}`;
-
+        this.attendance.check_in = this.getCurrentTime();
         this.showCheckin = true;
         break;
 
       case 'CHECKOUT':
-        this.modalTitle   = 'Check Out';
+        this.modalTitle = 'Check Out';
+        this.attendance.check_out = this.getCurrentTime();
         this.showCheckout = true;
-        break;
-
-      case 'HALF_DAY':
-        this.modalTitle   = 'Half Day';
-        this.showCheckin  = true;
-        this.showCheckout = true;
-        this.showReason   = true;
         break;
 
       case 'LEAVE':
-        this.modalTitle    = 'Apply Leave';
+        this.modalTitle = 'Apply Leave';
         this.showDateRange = true;
-        this.showReason    = true;
+        this.showReason = true;
+        this.showLeaveType = true;
         break;
 
       case 'WFH':
-        this.modalTitle    = 'Work From Home';
+        this.modalTitle = 'Work From Home';
         this.showDateRange = true;
-        this.showReason    = true;
+        this.showReason = true;
         break;
     }
 
@@ -119,37 +124,48 @@ export class Dashboard implements OnInit {
   }
 
   submitAttendance() {
+
     if (this.showCheckin && !this.attendance.check_in) {
       alert('Please enter Check In time.');
       return;
     }
+
     if (this.showCheckout && !this.attendance.check_out) {
       alert('Please enter Check Out time.');
       return;
     }
+
     if (this.showDateRange && (!this.attendance.from_date || !this.attendance.to_date)) {
       alert('Please select From and To dates.');
       return;
     }
+
     if (this.showReason && !this.attendance.reason.trim()) {
       alert('Please provide a reason.');
       return;
     }
 
+    if (this.showLeaveType && !this.attendance.leave_type) {
+      alert('Please select Leave Type.');
+      return;
+    }
+
     const payload = {
-      emp_id:    this.credentials.emp_id,
-      date:      this.todayDate,
-      status:    this.attendance.status,
-      check_in:  this.attendance.check_in  || null,
+      emp_id: this.credentials.emp_id,
+      date: this.todayDate,
+      status: this.attendance.status,
+      check_in: this.attendance.check_in || null,
       check_out: this.attendance.check_out || null,
       from_date: this.attendance.from_date || null,
-      to_date:   this.attendance.to_date   || null,
-      reason:    this.attendance.reason    || null
+      to_date: this.attendance.to_date || null,
+      reason: this.attendance.reason || null,
+      leave_type: this.attendance.leave_type || null
     };
 
     console.log('Payload:', payload);
 
-    this.attendanceEmp.saveAttendace(payload, this.attendance.from_date, this.attendance.to_date)
+    this.attendanceEmp
+      .saveAttendace(payload, this.attendance.from_date, this.attendance.to_date)
       .subscribe({
         next: (res) => {
           console.log('Attendance saved', res);
@@ -173,19 +189,23 @@ export class Dashboard implements OnInit {
   }
 
   private resetAndClose() {
-    this.showModal     = false;
-    this.showCheckin   = false;
-    this.showCheckout  = false;
+    this.showModal = false;
+    this.showCheckin = false;
+    this.showCheckout = false;
     this.showDateRange = false;
-    this.showReason    = false;
-    this.modalTitle    = '';
+    this.showReason = false;
+    this.showLeaveType = false;
+
+    this.modalTitle = '';
+
     this.attendance = {
       status: '',
       check_in: '',
       check_out: '',
       from_date: '',
       to_date: '',
-      reason: ''
+      reason: '',
+      leave_type: ''
     };
   }
 }
