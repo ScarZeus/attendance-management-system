@@ -37,43 +37,36 @@
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" *ngIf="showModal">
   <div class="modal" (click)="$event.stopPropagation()">
     <h3>{{ modalTitle }}</h3>
     <form (ngSubmit)="submitAttendance()">
 
-      <!-- Date (always shown) -->
       <div class="form-field">
         <label>Date</label>
         <input type="text" [value]="todayDate" disabled />
       </div>
 
-      <!-- Check In Time -->
       <div class="form-field" *ngIf="showCheckin">
         <label>Check In Time</label>
         <input type="time" [(ngModel)]="attendance.check_in" name="check_in" required />
       </div>
 
-      <!-- Check Out Time -->
       <div class="form-field" *ngIf="showCheckout">
         <label>Check Out Time</label>
         <input type="time" [(ngModel)]="attendance.check_out" name="check_out" required />
       </div>
 
-      <!-- From Date (Leave / WFH) -->
       <div class="form-field" *ngIf="showDateRange">
         <label>From Date</label>
         <input type="date" name="from_date" [(ngModel)]="attendance.from_date" required />
       </div>
 
-      <!-- To Date (Leave / WFH) -->
       <div class="form-field" *ngIf="showDateRange">
         <label>To Date</label>
         <input type="date" name="to_date" [(ngModel)]="attendance.to_date" required />
       </div>
 
-      <!-- Reason (Leave / Half Day / WFH) -->
       <div class="form-field" *ngIf="showReason">
         <label>Reason</label>
         <textarea [(ngModel)]="attendance.reason" name="reason" rows="3" required></textarea>

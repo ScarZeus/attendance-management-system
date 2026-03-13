@@ -14,6 +14,8 @@ import { Attendance } from '../../services/attendance';
 })
 export class Dashboard implements OnInit {
 
+  now = new Date();
+
   constructor(
     private auth: Auth,
     private router: Router,
@@ -24,6 +26,7 @@ export class Dashboard implements OnInit {
     emp_id: '',
     name: '',
     email: '',
+    role: '',
     department: ''
   };
 
@@ -60,7 +63,6 @@ export class Dashboard implements OnInit {
   openForm(event: Event, type: string) {
     event.stopPropagation();
 
-    // Reset
     this.attendance = {
       status: type,
       check_in: '',
@@ -77,7 +79,14 @@ export class Dashboard implements OnInit {
 
     switch (type) {
       case 'CHECKIN':
-        this.modalTitle  = 'Check In';
+        this.modalTitle = 'Check In';
+
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        this.attendance.check_in = `${hours}:${minutes}`;
+
         this.showCheckin = true;
         break;
 
@@ -110,7 +119,6 @@ export class Dashboard implements OnInit {
   }
 
   submitAttendance() {
-    // Validation
     if (this.showCheckin && !this.attendance.check_in) {
       alert('Please enter Check In time.');
       return;
