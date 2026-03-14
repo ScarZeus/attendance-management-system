@@ -12,6 +12,7 @@ class Employee(models.Model):
         choices=Role.choices,
         default= Role.EMPLOYEE
     )
+    
     department = models.CharField(max_length=100)
 
     def __str__(self):

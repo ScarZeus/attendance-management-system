@@ -27,7 +27,7 @@ class Attendance(models.Model):
         choices=Status.choices,
         default=Status.ABSENT
     )
-
+    reason_type = models.TextField(blank=True,null= True)
     reason = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

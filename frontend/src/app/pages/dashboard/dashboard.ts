@@ -27,6 +27,7 @@ export class Dashboard implements OnInit {
     role: '',
     department: ''
   };
+  
 
   modalTitle = '';
   showModal = false;
@@ -78,12 +79,10 @@ export class Dashboard implements OnInit {
 
     this.attendance = {
       status: type,
+      employee: this.credentials.emp_id,
       check_in: '',
       check_out: '',
-      from_date: '',
-      to_date: '',
       reason: '',
-      leave_type: ''
     };
 
     this.showCheckin = false;
@@ -98,6 +97,7 @@ export class Dashboard implements OnInit {
         this.modalTitle = 'Check In';
         this.attendance.check_in = this.getCurrentTime();
         this.showCheckin = true;
+        
         break;
 
       case 'CHECKOUT':
@@ -150,34 +150,24 @@ export class Dashboard implements OnInit {
       return;
     }
 
-    const payload = {
-      emp_id: this.credentials.emp_id,
-      date: this.todayDate,
-      status: this.attendance.status,
-      check_in: this.attendance.check_in || null,
-      check_out: this.attendance.check_out || null,
-      from_date: this.attendance.from_date || null,
-      to_date: this.attendance.to_date || null,
-      reason: this.attendance.reason || null,
-      leave_type: this.attendance.leave_type || null
-    };
+    if(this.modalTitle === "Check in"){
+      // write the check in login here
+      const check_in_payload = {
 
-    console.log('Payload:', payload);
+      }
+    }
+    if(this.modalTitle === "Check out"){
+      //write the check out logic here
+    }
 
-    this.attendanceEmp
-      .saveAttendace(payload, this.attendance.from_date, this.attendance.to_date)
-      .subscribe({
-        next: (res) => {
-          console.log('Attendance saved', res);
-          alert('Attendance submitted successfully!');
-        },
-        error: (err) => {
-          console.error('Error saving attendance', err);
-          alert('Failed to submit attendance.');
-        }
-      });
+    if(this.modalTitle === "Apply Leave"){
+      //write logic for Applying leave
+    }
+    if(this.modalTitle === "Work From Home"){
+      //write logic for Apply from home
+    }
 
-    this.resetAndClose();
+    
   }
 
   closeModal() {
