@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class Attendance {
-  private baseUrl = fetch(environment.apiUrl);
-  constructor(private http: HttpClient) { }
-  
-  checK_in(){
-    return;
+const BASE = 'http://127.0.0.1:8000/api/v1';
+
+@Injectable({ providedIn: 'root' })
+export class AttendanceService {
+  constructor(private http: HttpClient) {}
+
+  checkIn(empId: string): Observable<any> {
+    return this.http.post(`${BASE}/employees/${empId}/attendance/check-in/`, {});
   }
 
-  check_out(){
-    return;
+  checkOut(empId: string): Observable<any> {
+    return this.http.post(`${BASE}/employees/${empId}/attendance/check-out/`, {});
   }
-  
+
+  getAttendance(empId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${BASE}/employees/${empId}/attendance/`);
+  }
 }

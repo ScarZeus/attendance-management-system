@@ -1,0 +1,47 @@
+<div class="page">
+  <h1>Work From Home Request</h1>
+  <button class="btn btn-gray back-btn" (click)="goBack()">← Back to Dashboard</button>
+
+  <div class="msg success" *ngIf="messageType === 'success'">{{ message }}</div>
+  <div class="msg error" *ngIf="messageType === 'error'">{{ message }}</div>
+
+  <form class="form-box" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label>From Date</label>
+      <input type="date" [(ngModel)]="form.from_date" name="from_date" required />
+    </div>
+
+    <div class="form-group">
+      <label>To Date</label>
+      <input type="date" [(ngModel)]="form.to_date" name="to_date" required />
+    </div>
+
+    <div class="form-group">
+      <label>Reason</label>
+      <textarea [(ngModel)]="form.reason" name="reason" rows="3" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-orange">Submit Request</button>
+  </form>
+
+  <h2>WFH History</h2>
+  <table *ngIf="history.length > 0">
+    <thead>
+      <tr>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of history">
+        <td>{{ item.from_date }}</td>
+        <td>{{ item.to_date }}</td>
+        <td>{{ item.reason }}</td>
+        <td><span class="badge" [class]="item.status.toLowerCase()">{{ item.status }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="history.length === 0" class="empty">No WFH requests found.</p>
+</div>

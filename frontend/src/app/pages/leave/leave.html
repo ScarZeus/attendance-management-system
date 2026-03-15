@@ -1,0 +1,58 @@
+<div class="page">
+  <h1>Apply Leave</h1>
+  <button class="btn btn-gray back-btn" (click)="goBack()">← Back to Dashboard</button>
+
+  <div class="msg success" *ngIf="messageType === 'success'">{{ message }}</div>
+  <div class="msg error" *ngIf="messageType === 'error'">{{ message }}</div>
+
+  <form class="form-box" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label>Leave Type</label>
+      <select [(ngModel)]="form.leave_type" name="leave_type" required>
+        <option value="">-- Select --</option>
+        <option value="SICK">Sick Leave</option>
+        <option value="CASUAL">Casual Leave</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>From Date</label>
+      <input type="date" [(ngModel)]="form.from_date" name="from_date" required />
+    </div>
+
+    <div class="form-group">
+      <label>To Date</label>
+      <input type="date" [(ngModel)]="form.to_date" name="to_date" required />
+    </div>
+
+    <div class="form-group">
+      <label>Reason</label>
+      <textarea [(ngModel)]="form.reason" name="reason" rows="3" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-blue">Submit Request</button>
+  </form>
+
+  <h2>Leave History</h2>
+  <table *ngIf="history.length > 0">
+    <thead>
+      <tr>
+        <th>Leave Type</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of history">
+        <td>{{ item.leave_type }}</td>
+        <td>{{ item.from_date }}</td>
+        <td>{{ item.to_date }}</td>
+        <td>{{ item.reason }}</td>
+        <td><span class="badge" [class]="item.status.toLowerCase()">{{ item.status }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="history.length === 0" class="empty">No leave requests found.</p>
+</div>

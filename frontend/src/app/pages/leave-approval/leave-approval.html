@@ -1,0 +1,41 @@
+<div class="page">
+  <h1>Leave Approval</h1>
+  <button class="btn btn-gray back-btn" (click)="goBack()">← HR Dashboard</button>
+
+  <div class="msg success" *ngIf="messageType === 'success'">{{ message }}</div>
+  <div class="msg error" *ngIf="messageType === 'error'">{{ message }}</div>
+
+  <table *ngIf="requests.length > 0">
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Emp ID</th>
+        <th>Leave Type</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let req of requests">
+        <td>{{ req.employee_name }}</td>
+        <td>{{ req.employee_emp_id }}</td>
+        <td>{{ req.leave_type }}</td>
+        <td>{{ req.from_date }}</td>
+        <td>{{ req.to_date }}</td>
+        <td>{{ req.reason }}</td>
+        <td><span class="badge" [class]="req.status.toLowerCase()">{{ req.status }}</span></td>
+        <td>
+          <ng-container *ngIf="req.status === 'PENDING'">
+            <button class="btn btn-green btn-sm" (click)="approve(req.id)">Approve</button>
+            <button class="btn btn-red btn-sm" (click)="reject(req.id)">Reject</button>
+          </ng-container>
+          <span *ngIf="req.status !== 'PENDING'" class="done">—</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="requests.length === 0" class="empty">No leave requests found.</p>
+</div>
