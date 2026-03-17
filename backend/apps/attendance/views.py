@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
-from datetime import timedelta, date
+from datetime import timedelta, date,datetime
+from calendar import monthrange
 
 from .models import Attendance, LeaveRequest, WorkFromHomeRequest
 from .serializers import (
@@ -17,7 +18,7 @@ from apps.employees.models import Employee
 class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
 
     serializer_class = AttendanceSerializer
-
+    lookup_field = "emp_id" 
     def get_employee(self):
         return get_object_or_404(
             Employee,
@@ -28,6 +29,44 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
         return Attendance.objects.filter(
             employee=self.get_employee()
         ).order_by("-date")
+    
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="report/monthly"
+    )
+    def monthly_report(self, request, employee_emp_id=None):
+
+        employee = self.get_employee()
+
+        month = request.query_params.get("month")
+        year = request.query_params.get("year")
+
+        if not month or not year:
+            return Response(
+                {"error": "month and year query params required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            month = int(month)
+            year = int(year)
+        except ValueError:
+            return Response(
+                {"error": "month and year must be integers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        records = Attendance.objects.filter(
+            employee=employee,
+            date__year=year,
+            date__month=month
+        ).order_by("-date")
+
+        return Response(
+            AttendanceSerializer(records, many=True).data,
+            status=status.HTTP_200_OK
+        ) 
 
     @action(detail=False, methods=["post"], url_path="check-in")
     def check_in(self, request, employee_emp_id=None):
@@ -282,3 +321,5 @@ class WorkFromHomeRequestViewSet(viewsets.ModelViewSet):
         wfh.save()
 
         return Response(WorkFromHomeRequestSerializer(wfh).data)
+    
+    

@@ -21,7 +21,11 @@ export class LeaveApprovalPage implements OnInit {
 
   load() {
     this.leaveSvc.getLeaves().subscribe({
-      next: (res) => (this.requests = res),
+      next: (res) => {
+          this.requests = res
+          console.log(this.requests);
+      }
+      ,
       error: () => {},
     });
   }
