@@ -36,24 +36,25 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
         url_path="report/monthly"
     )
     def monthly_report(self, request, employee_emp_id=None):
-
         employee = self.get_employee()
-
         month = request.query_params.get("month")
         year = request.query_params.get("year")
+        limit = request.query_params.get("limit", 5)
+        offset = request.query_params.get("offset", 0)
 
         if not month or not year:
             return Response(
                 {"error": "month and year query params required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
         try:
             month = int(month)
             year = int(year)
+            limit = int(limit)
+            offset = int(offset)
         except ValueError:
             return Response(
-                {"error": "month and year must be integers."},
+                {"error": "month, year, limit and offset must be integers."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -63,10 +64,15 @@ class EmployeeAttendanceViewSet(viewsets.ModelViewSet):
             date__month=month
         ).order_by("-date")
 
-        return Response(
-            AttendanceSerializer(records, many=True).data,
-            status=status.HTTP_200_OK
-        ) 
+        total = records.count()
+        paginated = records[offset: offset + limit]
+
+        return Response({
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "results": AttendanceSerializer(paginated, many=True).data
+        }, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["post"], url_path="check-in")
     def check_in(self, request, employee_emp_id=None):

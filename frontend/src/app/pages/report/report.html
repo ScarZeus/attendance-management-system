@@ -1,7 +1,6 @@
 <h2>Attendance Report</h2>
 <h3 *ngIf="employee">{{ employee.name }} ({{ employee.emp_id }})</h3>
 
-<!-- Rows-per-page selector -->
 <label>
   Rows per page:
   <select (change)="changeLimit($event)">
@@ -35,7 +34,6 @@
   </tbody>
 </table>
 
-<!-- Pagination controls -->
 <div class="pagination">
   <button (click)="goToPage(1)"           [disabled]="currentPage === 1">«</button>
   <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>

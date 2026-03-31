@@ -56,6 +56,10 @@ export class Dashboard implements OnInit {
 
   goLeave() { this.router.navigate(['/leave']); }
   goWfh() { this.router.navigate(['/wfh']); }
-  goAttendance() { this.router.navigate(['/attendance']); }
+  goAttendance() {
+  this.router.navigate(['/attendance'], {
+    queryParamsHandling: 'preserve'
+  });
+}
   goHr() { this.router.navigate(['/hr-dashboard']); }
 }
