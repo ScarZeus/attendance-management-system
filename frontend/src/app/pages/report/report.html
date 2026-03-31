@@ -1,6 +1,16 @@
 <h2>Attendance Report</h2>
 <h3 *ngIf="employee">{{ employee.name }} ({{ employee.emp_id }})</h3>
 
+<!-- Rows-per-page selector -->
+<label>
+  Rows per page:
+  <select (change)="changeLimit($event)">
+    <option value="5"  [selected]="limit === 5">5</option>
+    <option value="10" [selected]="limit === 10">10</option>
+    <option value="20" [selected]="limit === 20">20</option>
+  </select>
+</label>
+
 <table border="1">
   <thead>
     <tr>
@@ -19,9 +29,26 @@
       <td>{{ att.status }}</td>
       <td>{{ att.reason }}</td>
     </tr>
-
     <tr *ngIf="attendanceList.length === 0">
       <td colspan="5">No attendance records found</td>
     </tr>
   </tbody>
 </table>
+
+<!-- Pagination controls -->
+<div class="pagination">
+  <button (click)="goToPage(1)"           [disabled]="currentPage === 1">«</button>
+  <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+
+  <button
+    *ngFor="let p of pages"
+    (click)="goToPage(p)"
+    [class.active]="p === currentPage">
+    {{ p }}
+  </button>
+
+  <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">›</button>
+  <button (click)="goToPage(totalPages)"      [disabled]="currentPage === totalPages">»</button>
+</div>
+
+<p>
